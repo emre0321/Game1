@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GridController : ControllerBaseModel
 {
+    public static GridController Instance;
+
     [Header("GRID OLUSTURULACAK ELEMENTIN POOLU")]
     [SerializeField] PoolModel GridElementPool;
 
@@ -25,11 +27,9 @@ public class GridController : ControllerBaseModel
 
     public override void Initialize()
     {
+        Instance = this;
         GenerateGrid(GridNCount);
     }
-
-
-
 
     public void GenerateGrid(int nCount)
     {
@@ -40,6 +40,7 @@ public class GridController : ControllerBaseModel
         }
 
         ClearGrid();
+        GameController.Instance.GetController<CameraController>().CalculateCameraPos(nCount, GridVerticalOffset);
 
         for (int i = 0; i < nCount; i++)
         {
@@ -92,8 +93,33 @@ public class GridController : ControllerBaseModel
     {
         for (int i = 0; i < CurrentGridElements.Count; i++)
         {
+            CurrentGridElements[i].ChangeState(GridElementState.Empty);
             CurrentGridElements[i].SetDeactive();
             CurrentGridElements[i].transform.SetParent(GridElementPool.transform);
+            GridColoumnDatas = new List<GridColoumnData>();
+        }
+    }
+
+    public void CheckGridsComplete()
+    {
+        for (int i = 0; i < GridColoumnDatas.Count; i++)
+        {
+            for (int j = 0; j < GridColoumnDatas[i].GridElements.Count; j++)
+            {
+                if(j + 2 < GridColoumnDatas[i].GridElements.Count)
+                {
+                    if(GridColoumnDatas[i].GridElements[j].CurrentGridState == GridElementState.Filled &&
+                        GridColoumnDatas[i].GridElements[j+1].CurrentGridState == GridElementState.Filled &&
+                        GridColoumnDatas[i].GridElements[j + 2].CurrentGridState == GridElementState.Filled)
+                    {
+                        GridColoumnDatas[i].GridElements[j].ChangeState(GridElementState.Empty);
+                        GridColoumnDatas[i].GridElements[j+1].ChangeState(GridElementState.Empty);
+                        GridColoumnDatas[i].GridElements[j+2].ChangeState(GridElementState.Empty);
+                        GameController.Instance.TakeScore();
+
+                    }
+                }
+            }
         }
     }
 

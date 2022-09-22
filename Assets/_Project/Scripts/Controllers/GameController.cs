@@ -8,12 +8,20 @@ public class GameController : ControllerBaseModel
 
     public List<ControllerBaseModel> Controllers;
 
+    public int Score;
+
 
     public override void Initialize()
     {
         Instance = this;
+
     }
 
+    public T GetController<T>()
+    {
+        return (T)(object)Controllers.Find(x => x.GetType() == typeof(T));
+
+    }
 
     private void Update()
     {
@@ -28,5 +36,11 @@ public class GameController : ControllerBaseModel
             Controllers[i].ControllerUpdate();
         }
 
+    }
+
+    public void TakeScore()
+    {
+        Score++;
+        GetController<UIController>().ScoreUpdate(Score);
     }
 }

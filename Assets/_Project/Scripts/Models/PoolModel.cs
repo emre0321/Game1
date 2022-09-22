@@ -23,6 +23,7 @@ public class PoolModel : ObjectModel
             GameObject createdPoolElement = Instantiate(PoolElementPrefab);
             createdPoolElement.transform.SetParent(this.transform);
             PoolElements.Add(createdPoolElement.GetComponent<ObjectModel>());
+            createdPoolElement.GetComponent<ObjectModel>().Initialize();
             createdPoolElement.gameObject.SetActive(false);
         }
     }
